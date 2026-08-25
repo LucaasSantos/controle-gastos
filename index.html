@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Gastos</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 400px; margin: 40px auto; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select, button { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    button { background: #0070f3; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #0051bb; }
+  </style>
+</head>
+<body>
+
+  <h2>Novo Lançamento</h2>
+  <form id="expenseForm">
+    <div class="form-group">
+      <label>Descrição</label>
+      <input type="text" id="descricao" required placeholder="Ex: Supermercado">
+    </div>
+    <div class="form-group">
+      <label>Valor (R$)</label>
+      <input type="number" step="0.01" id="valor" required placeholder="0.00">
+    </div>
+    <div class="form-group">
+      <label>Categoria</label>
+      <select id="categoria">
+        <option value="Alimentação">Alimentação</option>
+        <option value="Transporte">Transporte</option>
+        <option value="Moradia">Moradia</option>
+        <option value="Lazer">Lazer</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tipo</label>
+      <select id="tipo">
+        <option value="Despesa">Despesa</option>
+        <option value="Receita">Receita</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Data</label>
+      <input type="date" id="data">
+    </div>
+    <button type="submit" id="btnSalvar">Salvar</button>
+  </form>
+
+  <script>
+    // Substitua pela URL da sua implantação do Apps Script
+    const API_URL = "SUA_URL_DO_APPS_SCRIPT_AQUI";
+
+    document.getElementById('data').valueAsDate = new Date();
+
+    document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvar');
+      btn.textContent = "Salvando...";
+      btn.disabled = true;
+
+      const payload = {
+        descricao: document.getElementById('descricao').value,
+        valor: document.getElementById('valor').value,
+        categoria: document.getElementById('categoria').value,
+        tipo: document.getElementById('tipo').value,
+        data: document.getElementById('data').value
+      };
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          mode: "no-cors", // Necessário para evitar bloqueios de CORS simples com Apps Script
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        alert("Gasto registrado com sucesso!");
+        document.getElementById('descricao').value = "";
+        document.getElementById('valor').value = "";
+      } catch (err) {
+        alert("Erro ao salvar: " + err.message);
+      } finally {
+        btn.textContent = "Salvar";
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
