@@ -11,7 +11,6 @@
   <link rel="manifest" href="manifest.json">
   <title>Registro de Gastos</title>
   
-  <!-- Biblioteca Chart.js para os gráficos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
@@ -26,196 +25,44 @@
       --input-bg: #12181D;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
+    .app-container { width: 100%; max-width: 420px; padding: 30px 20px; box-sizing: border-box; }
+    .header { text-align: center; margin-bottom: 30px; margin-top: 10px; }
+    .header h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+    .header h1 span { color: var(--neon-green); text-shadow: 0 0 12px var(--neon-green-glow); }
+    .header p { color: var(--text-muted); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-top: 10px; }
 
-    .app-container {
-      width: 100%;
-      max-width: 420px;
-      padding: 30px 20px;
-      box-sizing: border-box;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-      margin-top: 10px;
-    }
-
-    .header h1 {
-      font-size: 32px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 0;
-    }
-
-    .header h1 span {
-      color: var(--neon-green);
-      text-shadow: 0 0 12px var(--neon-green-glow);
-    }
-
-    .header p {
-      color: var(--text-muted);
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-top: 10px;
-    }
-
-    /* Navegação por Abas */
-    .tabs {
-      display: flex;
-      background-color: var(--input-bg);
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 20px;
-    }
-    .tab-btn {
-      flex: 1;
-      text-align: center;
-      padding: 12px;
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .tab-btn.active {
-      background-color: var(--card-bg);
-      color: var(--neon-green);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
+    .tabs { display: flex; background-color: var(--input-bg); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+    .tab-btn { flex: 1; text-align: center; padding: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+    .tab-btn.active { background-color: var(--card-bg); color: var(--neon-green); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .card-title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 0;
-      margin-bottom: 8px;
-    }
-    
+    .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card-title { font-size: 20px; font-weight: bold; margin-top: 0; margin-bottom: 8px; }
     .card-title span { color: var(--neon-green); }
-    .card-desc {
-      color: var(--text-muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
+    .card-desc { color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
 
     .form-group { margin-bottom: 16px; }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--neon-green);
-      font-weight: 600;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 14px;
-      background-color: var(--input-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-main);
-      font-size: 15px;
-      box-sizing: border-box;
-      outline: none;
-      -webkit-appearance: none;
-    }
+    label { display: block; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--neon-green); font-weight: 600; }
+    input, select { width: 100%; padding: 14px; background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 15px; box-sizing: border-box; outline: none; -webkit-appearance: none; }
     input:focus, select:focus { border-color: var(--neon-green); }
     ::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; }
 
-    button {
-      width: 100%;
-      padding: 16px;
-      background-color: transparent;
-      color: var(--neon-green);
-      border: 1px solid var(--neon-green);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      cursor: pointer;
-      margin-top: 5px;
-      transition: all 0.3s ease;
-    }
-    button:hover, button:active {
-      background-color: var(--neon-green);
-      color: #000;
-      box-shadow: 0 0 15px var(--neon-green-glow);
-    }
+    button { width: 100%; padding: 16px; background-color: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); border-radius: 8px; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; margin-top: 5px; transition: all 0.3s ease; }
+    button:hover, button:active { background-color: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green-glow); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Estilos do Mini-Extrato */
-    .historico-container {
-      margin-top: 25px;
-      border-top: 1px solid var(--border-color);
-      padding-top: 15px;
-    }
-    .historico-container h3 {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
-    .historico-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #141A20;
-      font-size: 13px;
-    }
+    .historico-container { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; }
+    .historico-container h3 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .historico-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #141A20; font-size: 13px; }
     .historico-item:last-child { border-bottom: none; }
     .val-despesa { color: #FF453A; }
     .val-receita { color: var(--neon-green); }
     
-    /* Estilo do Canvas do Gráfico */
-    .chart-container {
-      position: relative;
-      height: 300px;
-      width: 100%;
-      margin-top: 20px;
-    }
-    .loading-text {
-      text-align: center;
-      color: var(--neon-green);
-      font-size: 12px;
-      margin-top: 20px;
-      display: none;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 1; }
-      100% { opacity: 0.5; }
-    }
+    .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
+    .loading-text { text-align: center; color: var(--neon-green); font-size: 12px; margin-top: 20px; display: none; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
   </style>
 </head>
 <body>
@@ -265,7 +112,6 @@
           <div class="form-group">
             <label>Categoria</label>
             <select id="categoria">
-              <!-- Categorias ultra-personalizadas -->
               <option value="Alimentação">Alimentação</option>
               <option value="Fast Food">Fast Food</option>
               <option value="Transporte">Transporte / Combustível</option>
@@ -285,7 +131,6 @@
           <button type="submit" id="btnSalvar">Registrar Operação &rarr;</button>
         </form>
 
-        <!-- Mini-Extrato -->
         <div class="historico-container">
           <h3>Sessão Atual</h3>
           <div id="listaHistorico">
@@ -298,8 +143,8 @@
     <!-- ABA 2: DASHBOARD -->
     <div id="tab-dashboard" class="tab-content">
       <div class="card">
-        <h2 class="card-title">Análise de <span>Despesas</span></h2>
-        <p class="card-desc" style="margin-bottom: 0;">Gráfico consolidado baseado no histórico da planilha.</p>
+        <h2 class="card-title">Visão do <span>Mês</span></h2>
+        <p class="card-desc" style="margin-bottom: 0;">Inclui Custos Fixos + Despesas variáveis de <span id="mesAtualNome" style="color:var(--text-main); font-weight:bold;"></span>.</p>
         
         <div id="loadingDash" class="loading-text">Sincronizando com Banco de Dados...</div>
         
@@ -311,16 +156,19 @@
   </div>
 
   <script>
-    // PWA Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
     }
 
     const API_URL = "https://script.google.com/macros/s/AKfycbz8JEEpufTVBE-c_SXgn9MaVTSE9LK3BTrOmuTFuwfwH0YdVvidj4_FkZrFFNSQHGI/exec"; 
+    
+    // Configura o nome do mês atual na tela
+    const nomeMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    document.getElementById('mesAtualNome').innerText = nomeMeses[new Date().getMonth()];
+    
     document.getElementById('data').valueAsDate = new Date();
-    let meuGrafico = null; // Variável global do gráfico
+    let meuGrafico = null; 
 
-    // --- LÓGICA DE ABAS ---
     function switchTab(tab) {
       document.getElementById('tab-registro').classList.remove('active');
       document.getElementById('tab-dashboard').classList.remove('active');
@@ -333,15 +181,13 @@
       } else {
         document.getElementById('tab-dashboard').classList.add('active');
         document.getElementById('btnTabDashboard').classList.add('active');
-        carregarDashboard(); // Carrega o gráfico sempre que abrir a aba
+        carregarDashboard();
       }
     }
 
-    // --- LÓGICA DO MINI-EXTRATO (LOCALSTORAGE) ---
     function atualizarHistoricoVisual() {
       const history = JSON.parse(localStorage.getItem('trackM7_historico') || '[]');
       const lista = document.getElementById('listaHistorico');
-      
       if (history.length === 0) return;
       
       lista.innerHTML = '';
@@ -358,11 +204,8 @@
         lista.appendChild(div);
       });
     }
-    
-    // Iniciar histórico ao carregar a página
     atualizarHistoricoVisual();
 
-    // --- LÓGICA DE ENVIO (REGISTRO) ---
     document.getElementById('expenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnSalvar');
@@ -385,10 +228,9 @@
           body: JSON.stringify(payload)
         });
 
-        // Salvar no histórico local (Sessão)
         let history = JSON.parse(localStorage.getItem('trackM7_historico') || '[]');
         history.unshift(payload);
-        if (history.length > 5) history.pop(); // Mantém apenas os 5 últimos
+        if (history.length > 5) history.pop(); 
         localStorage.setItem('trackM7_historico', JSON.stringify(history));
         atualizarHistoricoVisual();
 
@@ -406,13 +248,12 @@
         }, 2000);
         
       } catch (err) {
-        alert("Erro na conexão com a planilha: " + err.message);
+        alert("Erro na conexão: " + err.message);
         btn.innerHTML = originalText;
         btn.disabled = false;
       }
     });
 
-    // --- LÓGICA DO DASHBOARD (CHART.JS) ---
     Chart.defaults.color = '#7E8C9A';
     Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, sans-serif';
 
@@ -421,47 +262,72 @@
       const ctx = document.getElementById('graficoDespesas').getContext('2d');
       
       loading.style.display = 'block';
-      if (meuGrafico) meuGrafico.destroy(); // Limpa gráfico anterior
+      if (meuGrafico) meuGrafico.destroy(); 
       
       try {
         const response = await fetch(API_URL);
-        const data = await response.json(); 
+        const json = await response.json(); 
         
         let totaisCategoria = {};
-        
-        // Processamento robusto do JSON retornado da planilha
-        data.forEach(linha => {
-          // Procura pelas chaves dinamicamente (ignora maiúsculas/minúsculas)
-          let keys = Object.keys(linha);
-          let keyTipo = keys.find(k => k.toLowerCase().includes('tipo'));
-          let keyCat = keys.find(k => k.toLowerCase().includes('categoria'));
-          let keyVal = keys.find(k => k.toLowerCase().includes('valor'));
-          
-          let tipo = keyTipo ? linha[keyTipo] : '';
-          let categoria = keyCat ? linha[keyCat] : 'Outros';
-          let valor = keyVal ? Number(linha[keyVal]) : 0;
-          
-          // Soma apenas despesas
-          if (tipo === 'Despesa' && valor > 0) {
-            totaisCategoria[categoria] = (totaisCategoria[categoria] || 0) + valor;
-          }
-        });
+        const dataAtual = new Date();
+        const mesAtual = dataAtual.getMonth();
+        const anoAtual = dataAtual.getFullYear();
+
+        // 1. SOMA CUSTOS FIXOS (Sempre entram no cálculo do dashboard)
+        if(json.fixos && json.fixos.length > 0) {
+          json.fixos.forEach(linha => {
+            let keys = Object.keys(linha);
+            let keyCat = keys.find(k => k.toLowerCase().includes('categoria'));
+            let keyVal = keys.find(k => k.toLowerCase().includes('valor'));
+            
+            let categoria = keyCat ? linha[keyCat] : 'Custos Fixos';
+            let valor = keyVal ? Number(linha[keyVal]) : 0;
+            
+            if (valor > 0) {
+              totaisCategoria[categoria] = (totaisCategoria[categoria] || 0) + valor;
+            }
+          });
+        }
+
+        // 2. SOMA GASTOS VARIÁVEIS (Apenas se a data for do mês atual)
+        if(json.gastos && json.gastos.length > 0) {
+          json.gastos.forEach(linha => {
+            let keys = Object.keys(linha);
+            let keyTipo = keys.find(k => k.toLowerCase().includes('tipo'));
+            let keyCat = keys.find(k => k.toLowerCase().includes('categoria'));
+            let keyVal = keys.find(k => k.toLowerCase().includes('valor'));
+            let keyData = keys.find(k => k.toLowerCase().includes('data'));
+            
+            let tipo = keyTipo ? linha[keyTipo] : '';
+            let categoria = keyCat ? linha[keyCat] : 'Outros';
+            let valor = keyVal ? Number(linha[keyVal]) : 0;
+            let dataGasto = keyData ? linha[keyData] : null;
+            
+            let isMesAtual = true;
+            if (dataGasto) {
+              let d = new Date(dataGasto);
+              if (!isNaN(d)) {
+                // Checa se o gasto ocorreu no mês e ano que estamos agora
+                isMesAtual = (d.getMonth() === mesAtual && d.getFullYear() === anoAtual);
+              }
+            }
+            
+            if (tipo === 'Despesa' && valor > 0 && isMesAtual) {
+              totaisCategoria[categoria] = (totaisCategoria[categoria] || 0) + valor;
+            }
+          });
+        }
         
         const labels = Object.keys(totaisCategoria);
         const valores = Object.values(totaisCategoria);
         
-        // Paleta de cores Cyber/Neon
-        const cores = [
-          '#00FF87', '#00B8FF', '#FF0055', '#7B61FF', 
-          '#FFB800', '#FF3B30', '#34C759', '#AF52DE', 
-          '#FF9500', '#5AC8FA', '#E5E5EA', '#8E8E93'
-        ];
+        const cores = ['#00FF87', '#00B8FF', '#FF0055', '#7B61FF', '#FFB800', '#FF3B30', '#34C759', '#AF52DE', '#FF9500', '#5AC8FA', '#E5E5EA', '#8E8E93'];
 
         loading.style.display = 'none';
 
         if (valores.length === 0) {
           loading.style.display = 'block';
-          loading.innerHTML = "Nenhuma despesa encontrada para gerar gráfico.";
+          loading.innerHTML = "Ainda não há despesas neste mês.";
           return;
         }
         
@@ -469,40 +335,22 @@
           type: 'doughnut',
           data: {
             labels: labels,
-            datasets: [{
-              data: valores,
-              backgroundColor: cores,
-              borderWidth: 2,
-              borderColor: '#0A0F12', // Cor do fundo do card
-              hoverOffset: 10
-            }]
+            datasets: [{ data: valores, backgroundColor: cores, borderWidth: 2, borderColor: '#0A0F12', hoverOffset: 10 }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%',
+            responsive: true, maintainAspectRatio: false, cutout: '70%',
             plugins: {
-              legend: {
-                position: 'right',
-                labels: { boxWidth: 12, padding: 15, font: { size: 10 } }
-              },
+              legend: { position: 'right', labels: { boxWidth: 12, padding: 15, font: { size: 10 } } },
               tooltip: {
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                titleColor: '#00FF87',
-                padding: 12,
-                callbacks: {
-                  label: function(context) {
-                    let val = context.raw || 0;
-                    return ' R$ ' + val.toFixed(2);
-                  }
-                }
+                backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#00FF87', padding: 12,
+                callbacks: { label: function(context) { return ' R$ ' + (context.raw || 0).toFixed(2); } }
               }
             }
           }
         });
         
       } catch (err) {
-        loading.innerHTML = "Erro ao carregar dados. Verifique o Apps Script.";
+        loading.innerHTML = "Erro ao carregar dados. Verifique a nova versão do Apps Script.";
       }
     }
   </script>
