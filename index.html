@@ -242,18 +242,11 @@
       });
     }
 
-    // COLE A SUA URL AQUI - MANTENHA AS ASPAS
-    const API_URL = "https://script.google.com/macros/s/AKfycbyipQmOcKCk0YAZT5y8dq6jIUZ9LqZDfS2XhojU25F1Da39Dt1_w4_NmLvFGLNYd7k/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbz8JEEpufTVBE-c_SXgn9MaVTSE9LK3BTrOmuTFuwfwH0YdVvidj4_FkZrFFNSQHGI/exec"; 
     document.getElementById('data').valueAsDate = new Date();
 
     document.getElementById('expenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      // Validação de URL vazia
-      if (API_URL === "https://script.google.com/macros/s/AKfycbyipQmOcKCk0YAZT5y8dq6jIUZ9LqZDfS2XhojU25F1Da39Dt1_w4_NmLvFGLNYd7k/exec" || !API_URL.startsWith("http")) {
-        alert("ALERTA: Você esqueceu de colocar a URL do Google Apps Script no código fonte!");
-        return;
-      }
 
       const btn = document.getElementById('btnSalvar');
       const originalText = btn.innerHTML;
@@ -269,7 +262,6 @@
       };
 
       try {
-        // Envio ajustado: usando text/plain previne bloqueio de CORS na requisição POST
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { 
@@ -278,7 +270,6 @@
           body: JSON.stringify(payload)
         });
 
-        // Mesmo se não retornar 200 certinho por causa do redirecionamento do Google, tentamos o sucesso
         btn.innerHTML = "OPERAÇÃO CONCLUÍDA!";
         btn.style.backgroundColor = "var(--neon-green)";
         btn.style.color = "#000";
