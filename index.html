@@ -8,9 +8,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Finanças">
   <link rel="apple-touch-icon" href="icon-192.png">
-  
   <link rel="manifest" href="manifest.json">
   <title>Registro de Gastos</title>
+  
+  <!-- Biblioteca Chart.js para os gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -44,8 +46,8 @@
 
     .header {
       text-align: center;
-      margin-bottom: 40px;
-      margin-top: 20px;
+      margin-bottom: 30px;
+      margin-top: 10px;
     }
 
     .header h1 {
@@ -69,6 +71,36 @@
       margin-top: 10px;
     }
 
+    /* Navegação por Abas */
+    .tabs {
+      display: flex;
+      background-color: var(--input-bg);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+      background-color: var(--card-bg);
+      color: var(--neon-green);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -84,10 +116,7 @@
       margin-bottom: 8px;
     }
     
-    .card-title span {
-      color: var(--neon-green);
-    }
-
+    .card-title span { color: var(--neon-green); }
     .card-desc {
       color: var(--text-muted);
       font-size: 13px;
@@ -95,10 +124,7 @@
       margin-bottom: 20px;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
-
+    .form-group { margin-bottom: 16px; }
     label {
       display: block;
       margin-bottom: 6px;
@@ -119,18 +145,10 @@
       font-size: 15px;
       box-sizing: border-box;
       outline: none;
-      transition: border-color 0.3s;
       -webkit-appearance: none;
     }
-
-    input:focus, select:focus {
-      border-color: var(--neon-green);
-    }
-
-    ::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      opacity: 0.6;
-    }
+    input:focus, select:focus { border-color: var(--neon-green); }
+    ::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; }
 
     button {
       width: 100%;
@@ -144,36 +162,59 @@
       text-transform: uppercase;
       letter-spacing: 2px;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 5px;
       transition: all 0.3s ease;
     }
-
     button:hover, button:active {
       background-color: var(--neon-green);
       color: #000;
       box-shadow: 0 0 15px var(--neon-green-glow);
     }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    /* Estilos do Mini-Extrato */
+    .historico-container {
+      margin-top: 25px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 15px;
     }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .tag {
-      font-size: 10px;
-      padding: 5px 10px;
-      border: 1px solid #2A3238;
-      border-radius: 4px;
+    .historico-container h3 {
+      font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .historico-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #141A20;
+      font-size: 13px;
+    }
+    .historico-item:last-child { border-bottom: none; }
+    .val-despesa { color: #FF453A; }
+    .val-receita { color: var(--neon-green); }
+    
+    /* Estilo do Canvas do Gráfico */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .loading-text {
+      text-align: center;
+      color: var(--neon-green);
+      font-size: 12px;
+      margin-top: 20px;
+      display: none;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
     }
   </style>
 </head>
@@ -185,69 +226,145 @@
       <p>Controle de Gastos</p>
     </div>
 
-    <div class="card">
-      <h2 class="card-title">Painel do <span>Lucas</span></h2>
-      <p class="card-desc">Lançamento de despesas e receitas para consolidação direta no banco de dados.</p>
-      
-      <div class="tags">
-        <span class="tag">USO PESSOAL</span>
-        <span class="tag">SHEETS DB</span>
-      </div>
+    <!-- Navegação -->
+    <div class="tabs">
+      <div class="tab-btn active" id="btnTabRegistro" onclick="switchTab('registro')">Operação</div>
+      <div class="tab-btn" id="btnTabDashboard" onclick="switchTab('dashboard')">Dashboard</div>
+    </div>
 
-      <form id="expenseForm">
-        <div class="form-group">
-          <label>Descrição</label>
-          <input type="text" id="descricao" required placeholder="Ex: Manutenção carro">
-        </div>
-        <div class="form-group">
-          <label>Valor (R$)</label>
-          <input type="number" step="0.01" id="valor" required placeholder="0.00">
-        </div>
+    <!-- ABA 1: REGISTRO -->
+    <div id="tab-registro" class="tab-content active">
+      <div class="card">
+        <h2 class="card-title">Painel do <span>Lucas</span></h2>
+        <p class="card-desc">Lançamento de fluxo de caixa para banco de dados.</p>
         
-        <div style="display: flex; gap: 10px;">
-          <div class="form-group" style="flex: 1;">
-            <label>Tipo</label>
-            <select id="tipo">
-              <option value="Despesa">Despesa</option>
-              <option value="Receita">Receita</option>
+        <form id="expenseForm">
+          <div class="form-group">
+            <label>Descrição</label>
+            <input type="text" id="descricao" required placeholder="Ex: Manutenção, Setup, etc...">
+          </div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="number" step="0.01" id="valor" required placeholder="0.00">
+          </div>
+          
+          <div style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+              <label>Tipo</label>
+              <select id="tipo">
+                <option value="Despesa">Despesa</option>
+                <option value="Receita">Receita</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Data</label>
+              <input type="date" id="data">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Categoria</label>
+            <select id="categoria">
+              <!-- Categorias ultra-personalizadas -->
+              <option value="Alimentação">Alimentação</option>
+              <option value="Fast Food">Fast Food</option>
+              <option value="Transporte">Transporte / Combustível</option>
+              <option value="Manutenção Automotiva">Manutenção Automotiva</option>
+              <option value="Saúde e Academia">Saúde e Academia</option>
+              <option value="Barbearia e Cuidados">Barbearia e Cuidados</option>
+              <option value="Cursos e Educação">Cursos e Educação</option>
+              <option value="Plataformas e Trading">Plataformas e Trading</option>
+              <option value="Tecnologia e Periféricos">Tecnologia e Periféricos</option>
+              <option value="Vestuário">Vestuário / Sneakers</option>
+              <option value="Moradia">Moradia / Assinaturas</option>
+              <option value="Lazer">Lazer</option>
+              <option value="Outros">Outros</option>
             </select>
           </div>
-          <div class="form-group" style="flex: 1;">
-            <label>Data</label>
-            <input type="date" id="data">
+          
+          <button type="submit" id="btnSalvar">Registrar Operação &rarr;</button>
+        </form>
+
+        <!-- Mini-Extrato -->
+        <div class="historico-container">
+          <h3>Sessão Atual</h3>
+          <div id="listaHistorico">
+            <div style="color: #4A5560; font-size: 12px; text-align: center; padding: 10px;">Nenhum lançamento recente.</div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <label>Categoria</label>
-          <select id="categoria">
-            <option value="Alimentação">Alimentação</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Assinaturas">Assinaturas</option>
-            <option value="Compras">Compras</option>
-            <option value="Lazer">Lazer</option>
-            <option value="Outros">Outros</option>
-          </select>
-        </div>
+    <!-- ABA 2: DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content">
+      <div class="card">
+        <h2 class="card-title">Análise de <span>Despesas</span></h2>
+        <p class="card-desc" style="margin-bottom: 0;">Gráfico consolidado baseado no histórico da planilha.</p>
         
-        <button type="submit" id="btnSalvar">Registrar Operação &rarr;</button>
-      </form>
+        <div id="loadingDash" class="loading-text">Sincronizando com Banco de Dados...</div>
+        
+        <div class="chart-container">
+          <canvas id="graficoDespesas"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    // PWA Service Worker
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
-      });
+      window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
     }
 
     const API_URL = "https://script.google.com/macros/s/AKfycbz8JEEpufTVBE-c_SXgn9MaVTSE9LK3BTrOmuTFuwfwH0YdVvidj4_FkZrFFNSQHGI/exec"; 
     document.getElementById('data').valueAsDate = new Date();
+    let meuGrafico = null; // Variável global do gráfico
 
+    // --- LÓGICA DE ABAS ---
+    function switchTab(tab) {
+      document.getElementById('tab-registro').classList.remove('active');
+      document.getElementById('tab-dashboard').classList.remove('active');
+      document.getElementById('btnTabRegistro').classList.remove('active');
+      document.getElementById('btnTabDashboard').classList.remove('active');
+
+      if (tab === 'registro') {
+        document.getElementById('tab-registro').classList.add('active');
+        document.getElementById('btnTabRegistro').classList.add('active');
+      } else {
+        document.getElementById('tab-dashboard').classList.add('active');
+        document.getElementById('btnTabDashboard').classList.add('active');
+        carregarDashboard(); // Carrega o gráfico sempre que abrir a aba
+      }
+    }
+
+    // --- LÓGICA DO MINI-EXTRATO (LOCALSTORAGE) ---
+    function atualizarHistoricoVisual() {
+      const history = JSON.parse(localStorage.getItem('trackM7_historico') || '[]');
+      const lista = document.getElementById('listaHistorico');
+      
+      if (history.length === 0) return;
+      
+      lista.innerHTML = '';
+      history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'historico-item';
+        const cssClass = item.tipo === 'Despesa' ? 'val-despesa' : 'val-receita';
+        const sinal = item.tipo === 'Despesa' ? '-' : '+';
+        
+        div.innerHTML = `
+          <span style="color: var(--text-main); font-weight: 500;">${item.descricao} <span style="color: var(--text-muted); font-size: 10px; margin-left: 5px;">(${item.categoria})</span></span>
+          <span class="${cssClass}">${sinal} R$ ${Number(item.valor).toFixed(2)}</span>
+        `;
+        lista.appendChild(div);
+      });
+    }
+    
+    // Iniciar histórico ao carregar a página
+    atualizarHistoricoVisual();
+
+    // --- LÓGICA DE ENVIO (REGISTRO) ---
     document.getElementById('expenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const btn = document.getElementById('btnSalvar');
       const originalText = btn.innerHTML;
       btn.innerHTML = "PROCESSANDO...";
@@ -262,13 +379,18 @@
       };
 
       try {
-        const response = await fetch(API_URL, {
+        await fetch(API_URL, {
           method: "POST",
-          headers: { 
-            "Content-Type": "text/plain;charset=utf-8",
-          },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
+
+        // Salvar no histórico local (Sessão)
+        let history = JSON.parse(localStorage.getItem('trackM7_historico') || '[]');
+        history.unshift(payload);
+        if (history.length > 5) history.pop(); // Mantém apenas os 5 últimos
+        localStorage.setItem('trackM7_historico', JSON.stringify(history));
+        atualizarHistoricoVisual();
 
         btn.innerHTML = "OPERAÇÃO CONCLUÍDA!";
         btn.style.backgroundColor = "var(--neon-green)";
@@ -289,6 +411,100 @@
         btn.disabled = false;
       }
     });
+
+    // --- LÓGICA DO DASHBOARD (CHART.JS) ---
+    Chart.defaults.color = '#7E8C9A';
+    Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, sans-serif';
+
+    async function carregarDashboard() {
+      const loading = document.getElementById('loadingDash');
+      const ctx = document.getElementById('graficoDespesas').getContext('2d');
+      
+      loading.style.display = 'block';
+      if (meuGrafico) meuGrafico.destroy(); // Limpa gráfico anterior
+      
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json(); 
+        
+        let totaisCategoria = {};
+        
+        // Processamento robusto do JSON retornado da planilha
+        data.forEach(linha => {
+          // Procura pelas chaves dinamicamente (ignora maiúsculas/minúsculas)
+          let keys = Object.keys(linha);
+          let keyTipo = keys.find(k => k.toLowerCase().includes('tipo'));
+          let keyCat = keys.find(k => k.toLowerCase().includes('categoria'));
+          let keyVal = keys.find(k => k.toLowerCase().includes('valor'));
+          
+          let tipo = keyTipo ? linha[keyTipo] : '';
+          let categoria = keyCat ? linha[keyCat] : 'Outros';
+          let valor = keyVal ? Number(linha[keyVal]) : 0;
+          
+          // Soma apenas despesas
+          if (tipo === 'Despesa' && valor > 0) {
+            totaisCategoria[categoria] = (totaisCategoria[categoria] || 0) + valor;
+          }
+        });
+        
+        const labels = Object.keys(totaisCategoria);
+        const valores = Object.values(totaisCategoria);
+        
+        // Paleta de cores Cyber/Neon
+        const cores = [
+          '#00FF87', '#00B8FF', '#FF0055', '#7B61FF', 
+          '#FFB800', '#FF3B30', '#34C759', '#AF52DE', 
+          '#FF9500', '#5AC8FA', '#E5E5EA', '#8E8E93'
+        ];
+
+        loading.style.display = 'none';
+
+        if (valores.length === 0) {
+          loading.style.display = 'block';
+          loading.innerHTML = "Nenhuma despesa encontrada para gerar gráfico.";
+          return;
+        }
+        
+        meuGrafico = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: valores,
+              backgroundColor: cores,
+              borderWidth: 2,
+              borderColor: '#0A0F12', // Cor do fundo do card
+              hoverOffset: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: { boxWidth: 12, padding: 15, font: { size: 10 } }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                titleColor: '#00FF87',
+                padding: 12,
+                callbacks: {
+                  label: function(context) {
+                    let val = context.raw || 0;
+                    return ' R$ ' + val.toFixed(2);
+                  }
+                }
+              }
+            }
+          }
+        });
+        
+      } catch (err) {
+        loading.innerHTML = "Erro ao carregar dados. Verifique o Apps Script.";
+      }
+    }
   </script>
 </body>
 </html>
