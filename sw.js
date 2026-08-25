@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trackm7-cache-v2'; // MUDAMOS PARA V2 AQUI!
+const CACHE_NAME = 'trackm7-cache-v3'; // MUDAMOS PARA V2 AQUI!
 const urlsToCache = [
   './',
   './index.html',
