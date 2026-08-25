@@ -186,17 +186,23 @@
 
   <div class="app-container">
     <div class="header">
-      <h1>CONTROLE<span>DE GASTOS</span></h1>
+      <h1>TRACK<span>M7</span></h1>
+      <p>Controle de Gastos</p>
     </div>
 
     <div class="card">
-      <h2 class="card-title">CUIDE<span>DO SEU DINHEIRO</span></h2>
+      <h2 class="card-title">Painel do <span>Lucas</span></h2>
+      <p class="card-desc">Lançamento de despesas e receitas para consolidação direta no banco de dados.</p>
+      
+      <div class="tags">
+        <span class="tag">USO PESSOAL</span>
+        <span class="tag">SHEETS DB</span>
       </div>
 
       <form id="expenseForm">
         <div class="form-group">
           <label>Descrição</label>
-          <input type="text" id="descricao" required placeholder="Ex: Combustível">
+          <input type="text" id="descricao" required placeholder="Ex: Manutenção carro">
         </div>
         <div class="form-group">
           <label>Valor (R$)</label>
@@ -229,11 +235,10 @@
           </select>
         </div>
         
-        <button type="submit" id="btnSalvar">Registrar Informação &rarr;</button>
+        <button type="submit" id="btnSalvar">Registrar Operação &rarr;</button>
       </form>
     </div>
   </div>
-
   <script>
     // 1. Registro do Service Worker para o PWA
     if ('serviceWorker' in navigator) {
