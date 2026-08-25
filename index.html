@@ -243,14 +243,14 @@
     }
 
     // COLE A SUA URL AQUI - MANTENHA AS ASPAS
-    const API_URL = "SUA_URL_DO_APPS_SCRIPT_AQUI"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbyipQmOcKCk0YAZT5y8dq6jIUZ9LqZDfS2XhojU25F1Da39Dt1_w4_NmLvFGLNYd7k/exec"; 
     document.getElementById('data').valueAsDate = new Date();
 
     document.getElementById('expenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
       // Validação de URL vazia
-      if (API_URL === "SUA_URL_DO_APPS_SCRIPT_AQUI" || !API_URL.startsWith("http")) {
+      if (API_URL === "https://script.google.com/macros/s/AKfycbyipQmOcKCk0YAZT5y8dq6jIUZ9LqZDfS2XhojU25F1Da39Dt1_w4_NmLvFGLNYd7k/exec" || !API_URL.startsWith("http")) {
         alert("ALERTA: Você esqueceu de colocar a URL do Google Apps Script no código fonte!");
         return;
       }
